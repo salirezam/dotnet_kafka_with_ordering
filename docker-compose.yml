@@ -27,11 +27,20 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_BROKER_RACK: "r1"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CREATE_TOPICS: "collection_account_topic:1:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_SCHEMA_REGISTRY_URL: "schemaregistry:8085"
-      #KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
-      KAFKA_JMX_PORT: 9991
+      
+  topic:
+    image: confluentinc/cp-kafka
+    network_mode: host
+    depends_on:
+      - kafka
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                       cub kafka-ready -b localhost:29092 1 20 && \
+                       echo Kafka is ready, creating topics && \
+                       kafka-topics --create --topic collection_account_topic --partitions 10 --replication-factor 1 --if-not-exists --zookeeper localhost:2181 && \
+                       echo Waiting a few seconds for topic creation to finish... && \
+                       sleep 2'"
       
   schemaregistry:
     image: confluentinc/cp-schema-registry
@@ -44,3 +53,5 @@ services:
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
     ports:
       - 8085:8085
+      
+      
