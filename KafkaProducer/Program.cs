@@ -1,4 +1,7 @@
 ﻿using System;
+using KafkaProducer.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace KafkaProducer
 {
@@ -6,7 +9,11 @@ namespace KafkaProducer
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            CreateHostBuilder(args).Build().Run();
         }
+
+        private static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureServices(collection => collection.AddHostedService<KafkaProducerService>());
     }
 }

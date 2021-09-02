@@ -6,7 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <PackageReference Include="Confluent.Kafka" Version="1.7.0" />
+    <PackageReference Include="Confluent.SchemaRegistry" Version="1.7.0" />
+    <PackageReference Include="Confluent.SchemaRegistry.Serdes.Json" Version="1.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharedEvents\SharedEvents.csproj" />
   </ItemGroup>
 
 </Project>

@@ -4,7 +4,7 @@ namespace SharedEvents
 {
     public interface IEvent
     {
-        public Guid Id { get; init; }
-        public DateTime TimeStamp { get; init; }
+        public Guid Id { get; set; }
+        public DateTime TimeStamp { get; set; }
     }
 }
