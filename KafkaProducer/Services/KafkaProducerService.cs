@@ -13,14 +13,15 @@ namespace KafkaProducer.Services
     public class KafkaProducerService : IHostedService
     {
         private readonly ILogger<KafkaProducerService> _logger;
-        private readonly IProducer<Null, string> _producer;
+        private readonly IProducer<string, string> _producer;
 
         public KafkaProducerService(ILogger<KafkaProducerService> logger)
         {
             _logger = logger;
             var config = new ProducerConfig
             {
-                BootstrapServers = "localhost:29092"
+                BootstrapServers = "localhost:29092",
+                Partitioner = Partitioner.Murmur2Random
             };
 
             var schemaRegistryConfig = new SchemaRegistryConfig
@@ -37,7 +38,7 @@ namespace KafkaProducer.Services
             };
 
             var schemaRegistry = new CachedSchemaRegistryClient(schemaRegistryConfig);
-            _producer = new ProducerBuilder<Null, string>(config)
+            _producer = new ProducerBuilder<string, string>(config)
                 //.SetValueSerializer(new JsonSerializer<MessageReceivedEvent>(schemaRegistry, jsonSerializerConfig))
                 .Build();
         }
@@ -45,14 +46,19 @@ namespace KafkaProducer.Services
         {
             for (var i = 0; i < 100; i++)
             {
-                var value = $"Hello World {i}";
-                _logger.LogInformation(value);
-
-                await _producer.ProduceAsync("collection_account_topic", new Message<Null, string>()
+                for (var j = 0; j < 10; j++)
                 {
-                    Value = value
-                }, cancellationToken);
-            }            
+                    var value = $"Hello World {j}";
+                    _logger.LogInformation(value);
+
+                    await _producer.ProduceAsync("collection_account_topic", new Message<string, string>()
+                    {
+                        Key = $"account-id-{i}",
+                        Value = value
+                    }, cancellationToken);
+                } 
+            }
+                       
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
